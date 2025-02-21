@@ -98,6 +98,8 @@
     <div class="config">
         <h3>Feeds de Diarios</h3>
         Selecciona los feeds que desees visualizar
+
+
         <!-- <ul>
             <li><a href="?q=https://www.lavanguardia.com/mvc/feed/rss/home">La Vanguardia</a></li>
             <li><a href="?q=https://www.elperiodico.com/es/rss/rss_portada.xml">El Periódico</a></li>
@@ -122,16 +124,8 @@
         <!-- Replace the existing <ul> list with this code -->
         <div class="feed-list" id="feed-list">
             <!-- <div class="feed-item">
-                <input type="checkbox" id="lavanguardia" data-url="https://www.lavanguardia.com/mvc/feed/rss/home">
-                <label for="lavanguardia">La Vanguardia</label>
-            </div> -->
-            <!-- <div class="feed-item">
                 <input type="checkbox" id="elperiodico" data-url="https://www.elperiodico.com/es/rss/rss_portada.xml">
                 <label for="elperiodico">El Periódico</label>
-            </div>
-            <div class="feed-item">
-                <input type="checkbox" id="20minutos" data-url="https://www.20minutos.es/rss/">
-                <label for="20minutos">20 Minutos</label>
             </div> -->
             <!-- Add the rest of your feeds following the same pattern -->
         </div>
@@ -185,6 +179,11 @@
 
         // Create my Feed List using my following JS variable 
         const listOfFeeds = [
+            {
+                "name": "Reddit Argentina",
+                "url": "https://www.reddit.com/r/argentina/.rss",
+                "isworking": true
+            },
             {
                 "name": "Clarin: Lo Último",
                 "url": "https://www.clarin.com/rss/lo-ultimo/",
