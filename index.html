@@ -50,6 +50,11 @@
         .article a:hover {
             text-decoration: underline;
         }
+        .article-image {
+            max-width: 50%;
+            height: auto;
+            margin-bottom: 10px;
+        }
         .article-meta {
             font-size: 14px;
             color: #666;
@@ -67,13 +72,33 @@
             padding: 40px;
             color: #666;
         }
+
+
+
+        /* Selector de medios  */
+        .feed-list {
+            margin: 20px 0;
+        }
+        .feed-item {
+            margin: 8px 0;
+        }
+        .feed-item label {
+            margin-left: 8px;
+            cursor: pointer;
+        }
+        #selected-feeds {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
     <div class="config">
         <h3>Feeds de Diarios</h3>
         Selecciona los feeds que desees visualizar
-        <ul>
+        <!-- <ul>
             <li><a href="?q=https://www.lavanguardia.com/mvc/feed/rss/home">La Vanguardia</a></li>
             <li><a href="?q=https://www.elperiodico.com/es/rss/rss_portada.xml">El Periódico</a></li>
             <li><a href="?q=https://www.20minutos.es/rss/">20 Minutos</a></li>
@@ -92,13 +117,233 @@
             <li><a href="?q=https://www.20minutos.es/rss/">20 Minutos</a></li>
             <li><a href="?q=https://www.abc.es/rss/feeds/abcPortada.xml">ABC</a></li>
       
-        </ul>
+        </ul> -->
+
+        <!-- Replace the existing <ul> list with this code -->
+        <div class="feed-list" id="feed-list">
+            <!-- <div class="feed-item">
+                <input type="checkbox" id="lavanguardia" data-url="https://www.lavanguardia.com/mvc/feed/rss/home">
+                <label for="lavanguardia">La Vanguardia</label>
+            </div> -->
+            <!-- <div class="feed-item">
+                <input type="checkbox" id="elperiodico" data-url="https://www.elperiodico.com/es/rss/rss_portada.xml">
+                <label for="elperiodico">El Periódico</label>
+            </div>
+            <div class="feed-item">
+                <input type="checkbox" id="20minutos" data-url="https://www.20minutos.es/rss/">
+                <label for="20minutos">20 Minutos</label>
+            </div> -->
+            <!-- Add the rest of your feeds following the same pattern -->
+        </div>
+
+
+        Tu URL será:
+        <textarea id="url" style="width: 100%; margin-bottom: 20px;">
+        </textarea>
     </div>
     <div id="app">
         <div id="loading" class="loading">Loading RSS feed...</div>
         <div id="error" class="error" style="display: none;"></div>
         <div id="feed" class="feed-container" style="display: none;"></div>
     </div>
+
+    <script>
+
+// Lo Último	
+// https://www.clarin.com/rss/lo-ultimo/
+// Política	
+// https://www.clarin.com/rss/politica/
+// Mundo	
+// https://www.clarin.com/rss/mundo/
+// Sociedad	
+// https://www.clarin.com/rss/sociedad/
+// Policiales	
+// https://www.clarin.com/rss/policiales/
+// Ciudades	
+// https://www.clarin.com/rss/ciudades/
+// Cultura	
+// https://www.clarin.com/rss/cultura/
+// Rural	
+// https://www.clarin.com/rss/rural/
+// Economía	
+// https://www.clarin.com/rss/economia/
+// Tecnología	
+// https://www.clarin.com/rss/tecnologia/
+// Internacional	
+// https://www.clarin.com/rss/internacional/
+// TV	
+// https://www.clarin.com/rss/espectaculos/tv/
+// Cine	
+// https://www.clarin.com/rss/espectaculos/cine/
+// Música	
+// https://www.clarin.com/rss/espectaculos/musica/
+// Espectáculos	
+// https://www.clarin.com/rss/espectaculos/
+// Autos	
+// https://www.clarin.com/rss/autos/
+
+
+        // Create my Feed List using my following JS variable 
+        const listOfFeeds = [
+            {
+                "name": "Clarin: Lo Último",
+                "url": "https://www.clarin.com/rss/lo-ultimo/",
+                "isworking": true
+            },
+            {
+                "name": "Clarin: Política",
+                "url": "https://www.clarin.com/rss/politica/",
+                "isworking": true
+            },
+            {
+                "name": "Clarin: Mundo",
+                "url": "https://www.clarin.com/rss/mundo/",
+                "isworking": true
+            },
+            {
+                "name": "Clarin: Sociedad",
+                "url": "https://www.clarin.com/rss/sociedad/",
+                "isworking": true
+            },
+            {
+                "name": "Clarin: Policiales",
+                "url": "https://www.clarin.com/rss/policiales/",
+                "isworking": true
+            },
+            {
+                "name": "Clarin: Ciudades",
+                "url": "https://www.clarin.com/rss/ciudades/",
+                "isworking": true
+            },
+            {
+                "name": "Clarin: Cultura",
+                "url": "https://www.clarin.com/rss/cultura/",
+                "isworking": true
+            },
+            {
+                "name": "Clarin: Rural",
+                "url": "https://www.clarin.com/rss/rural/",
+                "isworking": true
+            },
+            {
+                "name": "Clarin: Economía",
+                "url": "https://www.clarin.com/rss/economia/",
+                "isworking": true
+            },
+            {
+                "name": "Clarin: Tecnología",
+                "url": "https://www.clarin.com/rss/tecnologia/",
+                "isworking": true
+            },
+            {
+                "name": "Clarin: Internacional",
+                "url": "https://www.clarin.com/rss/internacional/",
+                "isworking": true
+            },
+            {
+                "name": "Clarin: TV",
+                "url": "https://www.clarin.com/rss/espectaculos/tv/",
+                "isworking": true
+            },
+            {
+                "name": "Clarin: Cine",
+                "url": "https://www.clarin.com/rss/espectaculos/cine/",
+                "isworking": true
+            },
+            {
+                "name": "Clarin: Música",
+                "url": "https://www.clarin.com/rss/espectaculos/musica/",
+                "isworking": true
+            },
+            {
+                "name": "Clarin: Espectáculos",
+                "url": "https://www.clarin.com/rss/espectaculos/",
+                "isworking": true
+            },
+            {
+                "name": "Clarin: Autos",
+                "url": "https://www.clarin.com/rss/autos/",
+                "isworking": true
+            },
+            {
+                "name": "La Vanguardia",
+                "url": "https://www.lavanguardia.com/mvc/feed/rss/home",
+                "isworking": false
+            },
+            {
+                "name": "El Periódico",
+                "url": "https://www.elperiodico.com/es/rss/rss_portada.xml",
+                "isworking": true
+            },
+                {
+                    "name": "20 Minutos",
+                    "url": "https://www.20minutos.es/rss/",
+                    "isworking": true
+                }
+        ];
+
+        // Create a new div element
+        const feedList = document.getElementById('feed-list');
+        listOfFeeds.forEach(feed => {
+            if(!feed.isworking) return;
+            const feedItem = document.createElement('div');
+            feedItem.className = 'feed-item';
+            feedItem.innerHTML = `
+                <input type="checkbox" id="${feed.name}" data-url="${feed.url}">
+                <label for="${feed.name}">${feed.name}</label>
+            `;
+            feedList.appendChild(feedItem);
+        });
+    </script>
+
+    <script>
+        // Selector de medios 
+        function updateSelectedFeeds() {
+            const checkboxes = document.querySelectorAll('.feed-item input[type="checkbox"]');
+            const selectedUrls = Array.from(checkboxes)
+                .filter(cb => cb.checked)
+                .map(cb => cb.dataset.url);
+
+            // Update URL with selected feeds
+            const newUrl = new URL(window.location.href);
+            newUrl.searchParams.delete('q');
+            selectedUrls.forEach(url => {
+                newUrl.searchParams.append('q', url);
+            });
+            
+            // Update URL without reloading the page
+            window.history.pushState({}, '', newUrl);
+            
+            // Update textarea with selected URLs
+            document.getElementById('url').value = selectedUrls.join('\n');
+
+            // Reload feeds if any are selected
+            if (selectedUrls.length > 0) {
+                loadRSSFeed();
+            }
+        }
+
+        // Add event listeners to checkboxes
+        document.querySelectorAll('.feed-item input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', updateSelectedFeeds);
+        });
+
+        // Check boxes based on current URL parameters on page load
+        window.addEventListener('load', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const urls = urlParams.getAll('q');
+            
+            document.querySelectorAll('.feed-item input[type="checkbox"]').forEach(checkbox => {
+                if (urls.includes(checkbox.dataset.url)) {
+                    checkbox.checked = true;
+                }
+            });
+            
+            // Update textarea with initial URLs
+            document.getElementById('url').value = urls.join('\n');
+        });
+
+    </script>
 
     <script>
         // Get RSS feed URL from query parameter
@@ -124,14 +369,26 @@
             // Parse feed metadata
             const title = channel.querySelector("title")?.textContent || "Untitled Feed";
             const description = channel.querySelector("description")?.textContent || "";
+            
             const items = Array.from(channel.querySelectorAll("item")).map(item => ({
                 title: item.querySelector("title")?.textContent || "Untitled",
                 link: item.querySelector("link")?.textContent || "#",
+                image: item.querySelector("enclosure")?.getAttribute("url") || 
+                        item.querySelector("media\\:content")?.getAttribute("url") || "",
                 description: item.querySelector("description")?.textContent || "",
                 pubDate: item.querySelector("pubDate")?.textContent || "",
                 author: item.querySelector("author")?.textContent || 
                         item.querySelector("dc\\:creator")?.textContent || ""
             }));
+
+            // Handle image rendering if present
+            items.forEach(item => {
+                if (item.image) {
+                    item.imageHtml = `<img src="${item.image}" alt="${item.title} image" class="article-image">`;
+                } else {
+                    item.imageHtml = ''; // Use an empty string if no image
+                }
+            });
 
             return {
                 title,
@@ -175,6 +432,7 @@
                         ${item.author ? `By ${item.author} • ` : ''}
                         ${item.pubDate ? formatDate(item.pubDate) : ''}
                     </div>
+                    ${item.imageHtml}
                     <div class="article-content">
                         ${item.description}
                     </div>
@@ -186,41 +444,115 @@
         }
 
         // Main function to fetch and display RSS feed
+        // async function loadRSSFeed_old() {
+            //     const loadingElement = document.getElementById('loading');
+            //     const errorElement = document.getElementById('error');
+            //     const feedElement = document.getElementById('feed');
+
+            //     try {
+            //         if (!feedUrl) {
+            //             throw new Error("No RSS feed URL provided. Use '?q=' parameter to specify the feed URL.");
+            //         }
+
+
+            //         // doing fetch instead of fs.readFile 
+            //         const response = await fetch(feedUrl);
+
+            //         if (!response.ok) {
+            //             throw new Error(`HTTP error! status: ${response.status}`);
+            //         }
+
+            //         const text = await response.text();
+                    
+            //         const feed = parseRSS(text);
+            //         renderFeed(feed);
+
+            //         // Optional: Log the successful feed load for debugging
+            //         console.log("RSS feed loaded successfully:", feed);
+                    
+            //         loadingElement.style.display = 'none';
+            //         errorElement.style.display = 'none';
+            //     } catch (error) {
+            //         loadingElement.style.display = 'none';
+            //         feedElement.style.display = 'none';
+            //         errorElement.textContent = `Error loading RSS feed: ${error.message}`;
+            //         errorElement.style.display = 'block';
+            //     }
+        // }
+
+
+
+        // Multilpe Feed Loader 
         async function loadRSSFeed() {
             const loadingElement = document.getElementById('loading');
             const errorElement = document.getElementById('error');
             const feedElement = document.getElementById('feed');
 
             try {
-                if (!feedUrl) {
-                    throw new Error("No RSS feed URL provided. Use '?q=' parameter to specify the feed URL.");
+                const urlParams = new URLSearchParams(window.location.search);
+                const feedUrls = urlParams.getAll('q');
+
+                if (feedUrls.length === 0) {
+                    throw new Error("No RSS feeds selected. Please select at least one feed.");
                 }
 
-
-                // doing fetch instead of fs.readFile 
-                const response = await fetch(feedUrl);
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const text = await response.text();
-                
-                const feed = parseRSS(text);
-                renderFeed(feed);
-
-                // Optional: Log the successful feed load for debugging
-                console.log("RSS feed loaded successfully:", feed);
-                
-                loadingElement.style.display = 'none';
+                loadingElement.style.display = 'block';
                 errorElement.style.display = 'none';
+                feedElement.style.display = 'none';
+
+                let allArticles = [];
+
+                // Fetch all selected feeds
+                for (const url of feedUrls) {
+                    try {
+                        // usando corsProxy en vez de URL
+                        // Add CORS proxy to the URL
+                        const corsProxy = 'https://api.allorigins.win/raw?url=';
+                        const proxyUrl = corsProxy + encodeURIComponent(url);
+                        
+                        const response = await fetch(proxyUrl);
+                        if (!response.ok) {
+                            console.error(`Failed to load feed from ${url}`);
+                            continue;
+                        }
+                        
+                        // const response = await fetch(url);
+                        // if (!response.ok) {
+                        //     console.error(`Failed to load feed from ${url}`);
+                        //     continue;
+                        // }
+                        const text = await response.text();
+                        const feed = parseRSS(text);
+                        allArticles = allArticles.concat(feed.items);
+                    } catch (error) {
+                        console.error(`Error loading feed from ${url}:`, error);
+                    }
+                }
+
+                // Sort all articles by date
+                allArticles.sort((a, b) => {
+                    return new Date(b.pubDate) - new Date(a.pubDate);
+                });
+
+                // Render combined feed
+                const combinedFeed = {
+                    title: "Combined News Feed",
+                    description: `Showing articles from ${feedUrls.length} selected sources`,
+                    items: allArticles
+                };
+
+                renderFeed(combinedFeed);
+                loadingElement.style.display = 'none';
+                
             } catch (error) {
                 loadingElement.style.display = 'none';
                 feedElement.style.display = 'none';
-                errorElement.textContent = `Error loading RSS feed: ${error.message}`;
+                errorElement.textContent = `Error loading RSS feeds: ${error.message}`;
                 errorElement.style.display = 'block';
             }
         }
+
+
 
         // Load the feed when the page loads
         loadRSSFeed();
