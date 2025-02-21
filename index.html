@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSS Feed Viewer</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .feed-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .feed-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .feed-title {
+            font-size: 24px;
+            color: #333;
+            margin: 0 0 10px 0;
+        }
+        .feed-description {
+            color: #666;
+            margin: 0;
+        }
+        .article {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .article:last-child {
+            border-bottom: none;
+        }
+        .article h2 {
+            margin: 0 0 10px 0;
+        }
+        .article a {
+            color: #2b6cb0;
+            text-decoration: none;
+        }
+        .article a:hover {
+            text-decoration: underline;
+        }
+        .article-meta {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .error {
+            color: #e53e3e;
+            padding: 20px;
+            background: #fff5f5;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="config">
+        <h3>Feeds de Diarios</h3>
+        Selecciona los feeds que desees visualizar
+        <ul>
+            <li><a href="?q=https://www.lavanguardia.com/mvc/feed/rss/home">La Vanguardia</a></li>
+            <li><a href="?q=https://www.elperiodico.com/es/rss/rss_portada.xml">El Periódico</a></li>
+            <li><a href="?q=https://www.20minutos.es/rss/">20 Minutos</a></li>
+            <li><a href="?q=https://www.abc.es/rss/feeds/abcPortada.xml">ABC</a></li>
+            <li><a href="?q=https://www.elmundo.es/rss/portada.xml">El Mundo</a></li>
+            <li><a href="?q=https://www.elconfidencial.com/rss">El Confidencial</a></li>
+            <li><a href="?q=https://www.elcorreo.com/rss/feeds/elcorreo-portada.xml">El Correo</a></li>
+            <li><a href="?q=https://www.eldiario.es/rss">El Diario</a></li>
+            <li><a href="?q=https://www.eitb.eus/es/rss/">EITB</a></li>
+            <li><a href="?q=https://www.huffingtonpost.es/feeds/index.xml">Huffington Post</a></li>
+            <li><a href="?q=https://www.larazon.es/rss/portada.xml">La Razón</a></li>
+            <li><a href="?q=https://www.libertaddigital.com/rss/portada.xml">Libertad Digital</a></li>
+            <li><a href="?q=https://www.publico.es/rss">Público</a></li>
+            <li><a href="?q=https://www.eldiario.es/rss">El Diario</a></li>
+            <li><a href="?q=https://www.elperiodico.com/es/rss/rss_portada.xml">El Periódico</a></li>
+            <li><a href="?q=https://www.20minutos.es/rss/">20 Minutos</a></li>
+            <li><a href="?q=https://www.abc.es/rss/feeds/abcPortada.xml">ABC</a></li>
+      
+        </ul>
+    </div>
+    <div id="app">
+        <div id="loading" class="loading">Loading RSS feed...</div>
+        <div id="error" class="error" style="display: none;"></div>
+        <div id="feed" class="feed-container" style="display: none;"></div>
+    </div>
+
+    <script>
+        // Get RSS feed URL from query parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const feedUrl = urlParams.get('q');
+
+        // Function to parse RSS XML
+        function parseRSS(xmlText) {
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+            
+            // Handle parsing errors
+            const parseError = xmlDoc.querySelector("parsererror");
+            if (parseError) {
+                throw new Error("Invalid XML format");
+            }
+
+            const channel = xmlDoc.querySelector("channel");
+            if (!channel) {
+                throw new Error("Invalid RSS format: no channel element found");
+            }
+
+            // Parse feed metadata
+            const title = channel.querySelector("title")?.textContent || "Untitled Feed";
+            const description = channel.querySelector("description")?.textContent || "";
+            const items = Array.from(channel.querySelectorAll("item")).map(item => ({
+                title: item.querySelector("title")?.textContent || "Untitled",
+                link: item.querySelector("link")?.textContent || "#",
+                description: item.querySelector("description")?.textContent || "",
+                pubDate: item.querySelector("pubDate")?.textContent || "",
+                author: item.querySelector("author")?.textContent || 
+                        item.querySelector("dc\\:creator")?.textContent || ""
+            }));
+
+            return {
+                title,
+                description,
+                items
+            };
+        }
+
+        // Function to format date
+        function formatDate(dateStr) {
+            try {
+                const date = new Date(dateStr);
+                return date.toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            } catch (e) {
+                console.error("Error formatting date:", e);
+                return dateStr;
+            }
+        }
+
+        // Function to render feed content
+        function renderFeed(feed) {
+            const feedElement = document.getElementById('feed');
+            
+            // Render feed header
+            const headerHtml = `
+                <div class="feed-header">
+                    <h1 class="feed-title">${feed.title}</h1>
+                    <p class="feed-description">${feed.description}</p>
+                </div>
+            `;
+
+            // Render articles
+            const articlesHtml = feed.items.map(item => `
+                <article class="article">
+                    <h2><a href="${item.link}" target="_blank">${item.title}</a></h2>
+                    <div class="article-meta">
+                        ${item.author ? `By ${item.author} • ` : ''}
+                        ${item.pubDate ? formatDate(item.pubDate) : ''}
+                    </div>
+                    <div class="article-content">
+                        ${item.description}
+                    </div>
+                </article>
+            `).join('');
+
+            feedElement.innerHTML = headerHtml + articlesHtml;
+            feedElement.style.display = 'block';
+        }
+
+        // Main function to fetch and display RSS feed
+        async function loadRSSFeed() {
+            const loadingElement = document.getElementById('loading');
+            const errorElement = document.getElementById('error');
+            const feedElement = document.getElementById('feed');
+
+            try {
+                if (!feedUrl) {
+                    throw new Error("No RSS feed URL provided. Use '?q=' parameter to specify the feed URL.");
+                }
+
+
+                // doing fetch instead of fs.readFile 
+                const response = await fetch(feedUrl);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const text = await response.text();
+                
+                const feed = parseRSS(text);
+                renderFeed(feed);
+
+                // Optional: Log the successful feed load for debugging
+                console.log("RSS feed loaded successfully:", feed);
+                
+                loadingElement.style.display = 'none';
+                errorElement.style.display = 'none';
+            } catch (error) {
+                loadingElement.style.display = 'none';
+                feedElement.style.display = 'none';
+                errorElement.textContent = `Error loading RSS feed: ${error.message}`;
+                errorElement.style.display = 'block';
+            }
+        }
+
+        // Load the feed when the page loads
+        loadRSSFeed();
+    </script>
+</body>
+</html>
