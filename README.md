@@ -1,6 +1,13 @@
 # news-reader
 Reader de Noticias
 
+links itneresantes:
+saltear paywall: https://paywallreader.com/
+https://archive.ph/20250217200617/http://lanacion.com.ar/
+
+
+mas rss: https://elpais.com/info/rss/
+
 
 - La idea es que notebook LM los lea y genere un podcast con el resumen.
 - Puedo hacer uno por día.
